@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 # <HINT> Import any new Models here
-from .models import Course, Enrollment
+from .models import Course, Enrollment, Lesson, Question, Choice, Submission
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -123,12 +123,14 @@ def submit(request, course_id):
             args=(course.id, submission.id)))
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
-def extract_answers(request):
+def extract_answers(request,submission):
     submitted_anwsers = []
     for key in request.POST:
         if key.startswith('choice'):
             value = request.POST[key]
             choice_id = int(value)
+            choice = Choice.objects.get(id=choice_id)
+            submission.choices.add(choice)
             submitted_anwsers.append(choice_id)
     return submitted_anwsers
 
@@ -148,10 +150,10 @@ def show_exam_result(request, course_id, submission_id):
     choices = []
     for choice in submission.choices.all():
         if choice.is_correct:
-            couleur='alert-success'
+            colour='alert-success'
         else:
-            couleur='alert-danger'
-        choices.append([choice.question.id,choice.texte,couleur])
+            colour='alert-danger'
+        choices.append([choice.question.id,choice.choice_text,colour])
     allQuestions = []
     submissionGrade = 0
     maxGrade = 0
@@ -164,7 +166,7 @@ def show_exam_result(request, course_id, submission_id):
             if question.is_get_score(submission.choices.all()):
                 note = question.grade
                 submissionGrade = submissionGrade + question.grade
-            allQuestions.append([question.id,question.texte,question.grade,note])
+            allQuestions.append([question.id,question.question_text,question.grade,note])
             
     grade = round(submissionGrade/maxGrade*100)
     context = {
