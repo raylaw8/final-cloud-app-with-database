@@ -51,30 +51,23 @@
         <div class="card-columns-vertical mt-1">
         <h5 class="">Exam results</h5>
             <!--HINT Display exam results-->
-                        <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Question</th>
-                        <th>Your score</th>
-                        <th>Your answers</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <ul class="list-group list-group-flush">
                     {% for question in questions %}
-                        <tr><td>{{question.1}}</td>
-                            <td>{{question.3}} / {{question.2}}</td>
-                            <td>
-                                {% for choice in choices %}
-                                    {% if question.0 == choice.0 %}
-                                        <div class="alert {{choice.2}}">{{choice.1}}</div>
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                        </tr>
+                        <div class="card-header">
+                            {{question.1}}
+                        </div>
+                        {% for choice in choices %}
+                            {% if question.0 == choice.0 %}
+                                {% if choice.2 %}
+                                    <p class="text-success">Correct answer: {{choice.1}}</p>
+                                {% else %}    
+                                    <p class="text-secondary">{{choice.1}}</p>
+                                {% endif %}    
+                            {% endif %}
+                        {% endfor %}
                     {% endfor %}
-                </tbody>
-            </table>    
+            </ul>
         </div>
-    </div>
+</div>
 </body>
 </html>

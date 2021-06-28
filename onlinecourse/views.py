@@ -149,11 +149,8 @@ def show_exam_result(request, course_id, submission_id):
 
     choices = []
     for choice in submission.choices.all():
-        if choice.is_correct:
-            colour='alert-success'
-        else:
-            colour='alert-danger'
-        choices.append([choice.question.id,choice.choice_text,colour])
+        choices.append([choice.question.id,choice.choice_text,choice.is_correct])
+
     allQuestions = []
     submissionGrade = 0
     maxGrade = 0
@@ -162,12 +159,10 @@ def show_exam_result(request, course_id, submission_id):
         questions = Question.objects.filter(lesson=lesson.id)
         for question in questions:
             maxGrade = maxGrade + question.grade
-            note = 0
             if question.is_get_score(submission.choices.all()):
-                note = question.grade
                 submissionGrade = submissionGrade + question.grade
-            allQuestions.append([question.id,question.question_text,question.grade,note])
-            
+            allQuestions.append([question.id,question.question_text,question.grade])
+
     grade = round(submissionGrade/maxGrade*100)
     context = {
         'grade':    grade,
